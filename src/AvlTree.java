@@ -233,7 +233,7 @@ public class AvlTree {
         }
     }
 
-
+//демонстрация работы дерева
     public static void main(String[] args) {
         AvlTree tree = new AvlTree();
 
