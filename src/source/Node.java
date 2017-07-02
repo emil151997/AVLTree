@@ -1,3 +1,5 @@
+package source;
+
 /**
  * Created by Ecl1pce on 22.04.2017.
  */
@@ -10,10 +12,14 @@ public class Node  <T>{
 
     // значение дизбаласа
     public int correction;
+
+
     //левыое и правое поддеревья и родитель
     public Node<T> leftChild, rightChild, parent;
 
-    Node(String name, int key, Node<T> parent) {
+
+
+    public Node(String name, int key, Node<T> parent) {
         this.name = name;
         this.parent = parent;
         this.key = key;
@@ -23,5 +29,13 @@ public class Node  <T>{
         else {
             this.deep = 0;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "deep=" + deep +
+                ", key=" + key +
+                '}';
     }
 }

@@ -1,15 +1,80 @@
-/**
+package source; /**
  * Created by Ecl1pce on 22.04.2017.
  */
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+class Gen<T>{
+    T ob;
+   Gen(T o) {
+        ob=o;
+    }
+
+    T getob() {
+        return ob;
+    }
+    void showtype(){
+        System.out.println("Type T is " + ob.getClass().getName());
+    }
+}
+
+ abstract class AbstractSet<Gen>
+        extends AbstractCollection<Gen>
+        implements Set<Gen>{
+protected AbstractSet(){}
+    public boolean equals(Object o)
+  {
+             return (o == this
+                || (o instanceof Set && ((Set) o).size() == size()
+                 && containsAll((Collection) o)));
+          }
+    public int hashCode()
+     {
+             Iterator<Gen> itr = iterator();
+             int hash = 0;
+             int pos = size();
+             while (--pos >= 0)
+                 hash += hashCode();
+             return hash;
+           }
+    public boolean removeAll(Collection<?> c)
+    {
+             int oldsize = size();
+             int count = c.size();
+             if (oldsize < count)
+                   {
+                Iterator<Gen> i;
+                 for (i = iterator(), count = oldsize; count > 0; count--)
+                       {
+                       if (c.contains(i.next()))
+                             i.remove();
+                     }
+                   }
+             else
+               {
+                 Iterator<?> i;
+                 for (i = c.iterator(); count > 0; count--)
+                       remove(i.next());
+                  }
+             return oldsize != size();
+          }
+  }
 
 public class AvlTree {
-
     // Начальный узел
-    private static Node<Integer> root;
-
+   private int size = 0;
+    private int deep = 0;
+    public Node<Integer> root;
+    Node<Integer> getRoot() {
+            return root;
+          }
+    public int size() {
+        return size;
+         }
     // Вставка узла
     public boolean add(int key) {
-
+size++;
         // Если корень пуст, создаем его с введенным ключевым значением
         if (root == null)
             root = new Node(null, key, null);
@@ -31,6 +96,7 @@ public class AvlTree {
                 else
                     node = parent.rightChild;
 
+
                 // если узла нет
                 if (node == null) {
                     // В зависимости от того идем ли мы налево, создаем левого реенка или правого
@@ -51,6 +117,7 @@ public class AvlTree {
     //Метод удаления узла
     public void delete(int deletingKey) {
         //на случай, если нет корня
+        size--;
         if (root == null)
             return;
 
@@ -218,9 +285,12 @@ public class AvlTree {
         }
     }
 
+
+
     // вывод дерева
     public void showTree(int num){
         showTree(root, num);
+
     }
 
     private void showTree(Node node, int num){
@@ -233,15 +303,16 @@ public class AvlTree {
         }
     }
 
-//демонстрация работы дерева
+
     public static void main(String[] args) {
         AvlTree tree = new AvlTree();
 
-        System.out.println("Вставляем значения от 1 до 25");
+
+        System.out.println("Вставляем значения от 1 до 25" );
         for (int i = 1; i < 26; i++)
             tree.add(i);
 
-        System.out.println("Вывод дерева: ");
+        System.out.println();
         tree.calculateDeep();
         for(int i = 0;i < 6; i++){
             tree.showTree(i);
@@ -259,4 +330,6 @@ public class AvlTree {
             System.out.println();
         }
     }
+
+
 }
