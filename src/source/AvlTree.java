@@ -1,10 +1,12 @@
 package source; /**
  * Created by Ecl1pce on 22.04.2017.
  */
-import java.util.AbstractCollection;
+import java.util.*;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+
 class Gen<T>{
     T ob;
    Gen(T o) {
@@ -19,50 +21,11 @@ class Gen<T>{
     }
 }
 
- abstract class AbstractSet<Gen>
-        extends AbstractCollection<Gen>
-        implements Set<Gen>{
-protected AbstractSet(){}
-    public boolean equals(Object o)
-  {
-             return (o == this
-                || (o instanceof Set && ((Set) o).size() == size()
-                 && containsAll((Collection) o)));
-          }
-    public int hashCode()
-     {
-             Iterator<Gen> itr = iterator();
-             int hash = 0;
-             int pos = size();
-             while (--pos >= 0)
-                 hash += hashCode();
-             return hash;
-           }
-    public boolean removeAll(Collection<?> c)
-    {
-             int oldsize = size();
-             int count = c.size();
-             if (oldsize < count)
-                   {
-                Iterator<Gen> i;
-                 for (i = iterator(), count = oldsize; count > 0; count--)
-                       {
-                       if (c.contains(i.next()))
-                             i.remove();
-                     }
-                   }
-             else
-               {
-                 Iterator<?> i;
-                 for (i = c.iterator(); count > 0; count--)
-                       remove(i.next());
-                  }
-             return oldsize != size();
-          }
-  }
 
-public class AvlTree {
+
+public class AvlTree implements Set<Gen> {
     // Начальный узел
+    public Integer value;
    private int size = 0;
     private int deep = 0;
     public Node<Integer> root;
@@ -72,6 +35,163 @@ public class AvlTree {
     public int size() {
         return size;
          }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return false;
+    }
+
+
+    @Override
+    public Iterator<Gen> iterator() {
+        return new TreeIterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        Iterator it = new TreeIterator();
+        int i = 0;
+        while (it.hasNext()) {
+            array[i] = it.next();
+            i++;
+        }
+        return array;}
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+            T[] array = (Object) a.getClass() == (Object) Object[].class
+                    ? (T[]) new Object[size]
+                    : (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+            Iterator it = new TreeIterator();
+            int i = 0;
+            while (it.hasNext()) {
+                array[i] = (T) it.next();
+                i++;
+            }
+            return array;
+        }
+        Iterator it = new TreeIterator();
+        int i = 0;
+        while (it.hasNext()) {
+            a[i] = (T) it.next();
+            i++;
+        }
+        return a;
+    }
+
+    @Override
+    public boolean add(Gen gen) {
+        return false;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return false;
+    }
+
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        Iterator it = c.iterator();
+        while (it.hasNext()) {
+            if (!contains(it.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Gen> c) {
+        boolean changed = false;
+        Iterator it = c.iterator();
+        while (it.hasNext()) {
+            if (add((Gen) it.next())) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        AvlTree newTree = new AvlTree();
+        boolean changed = false;
+        Iterator it = c.iterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (contains(o)) {
+                if (!newTree.add((Gen) o)) {
+                    changed = true;
+                }
+            } else {
+                changed = true;
+            }
+        }
+        root = newTree.root;
+        size = newTree.size;
+        return changed;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        boolean changed = false;
+        Iterator it = c.iterator();
+        while (it.hasNext()) {
+            if (remove(it.next())) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+    @Override
+    public void clear() {
+        root = null;
+        size = 0;
+    }
+    public class TreeIterator implements Iterator<Gen> {
+        private final Object[] list;
+        private int index = 0;
+
+        public TreeIterator() {
+            list = new Object[size];
+            index = -1;
+        }
+
+        private void addElements(Node<Gen> node) {
+            if (node == null) {
+                return;
+            }
+            Node<Gen> leftNode = node.leftChild;
+            if (leftNode != null) {
+                addElements(leftNode);
+            }
+            list[index] = node.key;
+            index++;
+            Node<Gen> rightNode = node.rightChild;
+            if (rightNode != null) {
+                addElements(rightNode);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < list.length - 1;
+        }
+
+        @Override
+        public Gen next() {
+            index++;
+            return ((Gen) list[index]);
+        }
+    }
     // Вставка узла
     public boolean add(int key) {
 size++;
@@ -244,7 +364,6 @@ size++;
         setCorrection(a, b);
         return b;
     }
-
     // большой поворот правый
     private Node bigRightRotate(Node node) {
         node.leftChild = leftRotate(node.leftChild);
@@ -322,7 +441,6 @@ size++;
         System.out.println("Удалим пару значений: 8 и 3");
         tree.delete(8);
         tree.delete(3);
-
         tree.calculateDeep();
         System.out.println("Вывод: ");
         for(int i = 0;i<6;i++){
