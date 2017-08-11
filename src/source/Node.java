@@ -4,8 +4,10 @@ package source;
  * Created by Ecl1pce on 22.04.2017.
  */
 
-public class Node  <T>{
+public class Node  <T extends Comparable>{
 
+
+    public T value;
     public int deep;
     public String name;
     public int key;

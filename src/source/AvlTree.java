@@ -1,54 +1,102 @@
 package source; /**
  * Created by Ecl1pce on 22.04.2017.
  */
-import java.util.*;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import source.Node;
 
-class Gen<T>{
-    T ob;
-   Gen(T o) {
-        ob=o;
+
+
+
+public class AvlTree<T extends Comparable<T>> implements Set<T> {
+    public class TreeIterator implements Iterator<T> {
+        private final Object[] list;
+        private int index = 0;
+        public TreeIterator() {
+            list = new Object[size];
+            index = -1;
+        }
+
+        private void addElements(Node<T> node) {
+            if (node == null) {
+                return;
+            }
+            Node<T> leftNode = node.leftChild;
+            if (leftNode != null) {
+                addElements(leftNode);
+            }
+            list[index] = node.key;
+            index++;
+            Node<T> rightNode = node.rightChild;
+            if (rightNode != null) {
+                addElements(rightNode);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < list.length - 1;
+        }
+
+        @Override
+        public T next() {
+            index++;
+            return ((T) list[index]);
+        }
+
+        @Override
+        public void remove() {
+
+        }
     }
 
-    T getob() {
-        return ob;
-    }
-    void showtype(){
-        System.out.println("Type T is " + ob.getClass().getName());
-    }
-}
-
-
-
-public class AvlTree implements Set<Gen> {
     // Начальный узел
     public Integer value;
-   private int size = 0;
+    private int size = 0;
     private int deep = 0;
     public Node<Integer> root;
     Node<Integer> getRoot() {
-            return root;
-          }
+        return root;
+    }
     public int size() {
         return size;
-         }
+    }
 
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+
     @Override
     public boolean contains(Object o) {
-        return false;
+        if (root == null) {
+            return false;
+        }
+        T t = (T) o;
+        Node<T> closest = find(t, (Node<T>) root);
+        return closest != null && closest.value.compareTo(t) == 0;
+    }
+
+    private Node<T> find(T value, Node<T> node) {
+        if (node == null) {
+            return null;
+        }
+        int comparison = value.compareTo(node.value);
+        if (comparison == 0) {
+            return node;
+        } else if (comparison > 0) {
+            return find(value, node.rightChild);
+        } else {
+            return find(value, node.leftChild);
+        }
     }
 
 
     @Override
-    public Iterator<Gen> iterator() {
+    public Iterator<T> iterator() {
         return new TreeIterator();
     }
 
@@ -87,7 +135,7 @@ public class AvlTree implements Set<Gen> {
     }
 
     @Override
-    public boolean add(Gen gen) {
+    public boolean add(T t) {
         return false;
     }
 
@@ -109,11 +157,11 @@ public class AvlTree implements Set<Gen> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends Gen> c) {
+    public boolean addAll(Collection<? extends T> c) {
         boolean changed = false;
         Iterator it = c.iterator();
         while (it.hasNext()) {
-            if (add((Gen) it.next())) {
+            if (add((T) it.next())) {
                 changed = true;
             }
         }
@@ -128,7 +176,7 @@ public class AvlTree implements Set<Gen> {
         while (it.hasNext()) {
             Object o = it.next();
             if (contains(o)) {
-                if (!newTree.add((Gen) o)) {
+                if (!newTree.add((T) o)) {
                     changed = true;
                 }
             } else {
@@ -156,45 +204,10 @@ public class AvlTree implements Set<Gen> {
         root = null;
         size = 0;
     }
-    public class TreeIterator implements Iterator<Gen> {
-        private final Object[] list;
-        private int index = 0;
 
-        public TreeIterator() {
-            list = new Object[size];
-            index = -1;
-        }
-
-        private void addElements(Node<Gen> node) {
-            if (node == null) {
-                return;
-            }
-            Node<Gen> leftNode = node.leftChild;
-            if (leftNode != null) {
-                addElements(leftNode);
-            }
-            list[index] = node.key;
-            index++;
-            Node<Gen> rightNode = node.rightChild;
-            if (rightNode != null) {
-                addElements(rightNode);
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < list.length - 1;
-        }
-
-        @Override
-        public Gen next() {
-            index++;
-            return ((Gen) list[index]);
-        }
-    }
     // Вставка узла
     public boolean add(int key) {
-size++;
+        size++;
         // Если корень пуст, создаем его с введенным ключевым значением
         if (root == null)
             root = new Node(null, key, null);
