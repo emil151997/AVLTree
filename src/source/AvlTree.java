@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import source.Node;
+
 
 
 
@@ -14,26 +14,12 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
     public class TreeIterator implements Iterator<T> {
         private final Object[] list;
         private int index = 0;
+
         public TreeIterator() {
             list = new Object[size];
             index = -1;
         }
 
-        private void addElements(Node<T> node) {
-            if (node == null) {
-                return;
-            }
-            Node<T> leftNode = node.leftChild;
-            if (leftNode != null) {
-                addElements(leftNode);
-            }
-            list[index] = node.key;
-            index++;
-            Node<T> rightNode = node.rightChild;
-            if (rightNode != null) {
-                addElements(rightNode);
-            }
-        }
 
         @Override
         public boolean hasNext() {
@@ -52,14 +38,24 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Начальный узел
-    public Integer value;
-    private int size = 0;
-    private int deep = 0;
-    public Node<Integer> root;
-    Node<Integer> getRoot() {
-        return root;
-    }
+    public int size = 0;
+    private Node<Integer> parent;
+
     public int size() {
         return size;
     }
@@ -70,27 +66,28 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
     }
 
 
+
     @Override
     public boolean contains(Object o) {
-        if (root == null) {
+        if (parent == null) {
             return false;
         }
         T t = (T) o;
-        Node<T> closest = find(t, (Node<T>) root);
-        return closest != null && closest.value.compareTo(t) == 0;
+        Node<T> closest = find(t, (Node<T>) parent);
+        return closest != null && closest.key.compareTo(t) == 0;
     }
 
-    private Node<T> find(T value, Node<T> node) {
+    private Node<T> find(T key, Node<T> node) {
         if (node == null) {
             return null;
         }
-        int comparison = value.compareTo(node.value);
+        int comparison = key.compareTo(node.key);
         if (comparison == 0) {
             return node;
         } else if (comparison > 0) {
-            return find(value, node.rightChild);
+            return find(key, node.rightChild);
         } else {
-            return find(value, node.leftChild);
+            return find(key, node.leftChild);
         }
     }
 
@@ -152,6 +149,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
             if (!contains(it.next())) {
                 return false;
             }
+            break;
         }
         return true;
     }
@@ -183,7 +181,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
                 changed = true;
             }
         }
-        root = newTree.root;
+        parent = newTree.parent;
         size = newTree.size;
         return changed;
     }
@@ -201,7 +199,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
     }
     @Override
     public void clear() {
-        root = null;
+        parent = null;
         size = 0;
     }
 
@@ -209,10 +207,10 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
     public boolean add(int key) {
         size++;
         // Если корень пуст, создаем его с введенным ключевым значением
-        if (root == null)
-            root = new Node(null, key, null);
+        if (parent == null)
+            parent = new Node(null, key, null);
         else {
-            Node<Integer> node = root;
+            Node<Integer> node = parent;
             Node<Integer> parent;
             while (true) {
                 if (node.key == key)
@@ -251,13 +249,13 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
     public void delete(int deletingKey) {
         //на случай, если нет корня
         size--;
-        if (root == null)
+        if (parent == null)
             return;
 
-        Node<Integer> node = root;
-        Node<Integer> parent = root;
+        Node<Integer> node = parent;
+        Node<Integer> parent = this.parent;
         Node<Integer> deletingNode = null;
-        Node<Integer> child = root;
+        Node<Integer> child = this.parent;
 
         // Если дочерний узел есть
         while (child != null) {
@@ -286,8 +284,8 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
                 child = node.rightChild;
 
             // если удаляем корневой узел
-            if (root.key == deletingKey) {
-                root = child;
+            if (this.parent.key == deletingKey) {
+                this.parent = child;
             } else {
                 // Если вы хотите, чтобы удалить узел слева от родительского узла связывает дочерний узел узла, чтобы удалить с левой стороны родительского узла.
                 if (parent.leftChild == node) {
@@ -328,7 +326,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
             // продолжаем ребалансить наверх по дереву
             rebalancing(node.parent);
         } else {
-            root = node;
+            parent = node;
         }
     }
 
@@ -404,9 +402,9 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
 
     // вычисление глубины
     public void calculateDeep() {
-        root.deep = 0;
-        calculateDeep(root.leftChild);
-        calculateDeep(root.rightChild);
+        parent.deep = 0;
+        calculateDeep(parent.leftChild);
+        calculateDeep(parent.rightChild);
     }
 
     private void calculateDeep(Node node) {
@@ -421,7 +419,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
 
     // вывод дерева
     public void showTree(int num){
-        showTree(root, num);
+        showTree(parent, num);
 
     }
 

@@ -1,16 +1,11 @@
 package source;
 
-/**
- * Created by Ecl1pce on 22.04.2017.
- */
-
 public class Node  <T extends Comparable>{
 
 
-    public T value;
     public int deep;
     public String name;
-    public int key;
+    public T key;
 
     // значение дизбаласа
     public int correction;
@@ -21,7 +16,7 @@ public class Node  <T extends Comparable>{
 
 
 
-    public Node(String name, int key, Node<T> parent) {
+    public Node(String name, T key, Node<T> parent) {
         this.name = name;
         this.parent = parent;
         this.key = key;
