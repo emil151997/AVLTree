@@ -12,15 +12,31 @@ import java.util.Set;
 
 public class AvlTree<T extends Comparable<T>> implements Set<T> {
     public class TreeIterator implements Iterator<T> {
+
         private final Object[] list;
         private int index = 0;
 
         public TreeIterator() {
             list = new Object[size];
+            addElements((Node<T>) parent);
             index = -1;
         }
 
-
+        private void addElements(Node<T> node) {
+            if (node == null) {
+                return;
+            }
+            Node<T> leftNode = node.leftChild;
+            if (leftNode != null) {
+                addElements(leftNode);
+            }
+            list[index] = node.key;
+            index++;
+            Node<T> rightNode = node.rightChild;
+            if (rightNode != null) {
+                addElements(rightNode);
+            }
+        }
         @Override
         public boolean hasNext() {
             return index < list.length - 1;
@@ -32,25 +48,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
             return ((T) list[index]);
         }
 
-        @Override
-        public void remove() {
-
-        }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // Начальный узел
     public int size = 0;
@@ -143,7 +141,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
 
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(Collection<?> c  ) {
         Iterator it = c.iterator();
         while (it.hasNext()) {
             if (!contains(it.next())) {
@@ -205,6 +203,7 @@ public class AvlTree<T extends Comparable<T>> implements Set<T> {
 
     // Вставка узла
     public boolean add(int key) {
+        int massive[];
         size++;
         // Если корень пуст, создаем его с введенным ключевым значением
         if (parent == null)
